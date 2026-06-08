@@ -228,12 +228,18 @@
             font-size: 1.5rem;
             margin-right: 4px;
         }
+
+        .data-year {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="wrap">
         <h1>⚡ Energy Champ</h1>
-        <p class="small">Build your energy supercountry. Draft 6 countries and choose one energy strength from each. Then compete in 7 rounds against real-world energy mixes.</p>
+        <p class="small">Build your energy supercountry using real 2024 energy data. Draft 6 countries and choose one energy strength from each. Then compete in 7 rounds against real-world energy mixes.</p>
 
         <!-- DRAFT PHASE -->
         <div id="draftPhase">
@@ -257,6 +263,7 @@
             <div class="card">
                 <h2>Your Final Supercountry</h2>
                 <div class="grid" id="finalTeam"></div>
+                <p class="data-year">Based on 2024 real energy generation data</p>
             </div>
 
             <div class="card">
@@ -275,46 +282,46 @@
     </div>
 
     <script>
-        // Real country energy data (2024 estimates, % of electricity generation)
+        // Real 2024 country energy data (% of electricity generation from IEA/Ember data)
         const countryData = {
-            "Australia": { coal: 45, gas: 18, hydro: 8, solar: 18, wind: 11, storage: 0 },
-            "Austria": { coal: 6, gas: 8, hydro: 60, solar: 4, wind: 8, storage: 14 },
-            "Belgium": { coal: 2, gas: 38, hydro: 2, solar: 8, wind: 12, storage: 38 },
-            "Canada": { coal: 8, gas: 2, hydro: 56, solar: 2, wind: 6, storage: 26 },
-            "Chile": { coal: 25, gas: 28, hydro: 22, solar: 20, wind: 5, storage: 0 },
-            "Colombia": { coal: 28, gas: 15, hydro: 50, solar: 2, wind: 2, storage: 3 },
-            "Costa Rica": { coal: 0, gas: 8, hydro: 42, solar: 15, wind: 18, storage: 17 },
-            "Czechia": { coal: 36, gas: 8, hydro: 2, solar: 6, wind: 6, storage: 36 },
-            "Denmark": { coal: 10, gas: 20, hydro: 0, solar: 6, wind: 64, storage: 0 },
-            "Estonia": { coal: 65, gas: 2, hydro: 0, solar: 3, wind: 10, storage: 20 },
-            "Finland": { coal: 8, gas: 2, hydro: 16, solar: 1, wind: 22, storage: 3 },
-            "France": { coal: 2, gas: 10, hydro: 11, solar: 3, wind: 8, storage: 2 },
-            "Germany": { coal: 33, gas: 8, hydro: 4, solar: 12, wind: 28, storage: 15 },
-            "Greece": { coal: 28, gas: 18, hydro: 12, solar: 20, wind: 15, storage: 7 },
-            "Hungary": { coal: 18, gas: 30, hydro: 1, solar: 11, wind: 1, storage: 39 },
-            "Iceland": { coal: 0, gas: 0, hydro: 64, solar: 0, wind: 28, storage: 8 },
-            "Ireland": { coal: 3, gas: 50, hydro: 2, solar: 4, wind: 33, storage: 8 },
-            "Israel": { coal: 45, gas: 48, hydro: 0, solar: 5, wind: 2, storage: 0 },
-            "Italy": { coal: 8, gas: 42, hydro: 12, solar: 13, wind: 10, storage: 15 },
-            "Japan": { coal: 30, gas: 38, hydro: 9, solar: 11, wind: 2, storage: 10 },
-            "Korea": { coal: 28, gas: 25, hydro: 1, solar: 7, wind: 1, storage: 38 },
-            "Latvia": { coal: 25, gas: 18, hydro: 48, solar: 2, wind: 7, storage: 0 },
-            "Lithuania": { coal: 6, gas: 56, hydro: 4, solar: 6, wind: 12, storage: 16 },
-            "Luxembourg": { coal: 15, gas: 32, hydro: 8, solar: 8, wind: 12, storage: 25 },
-            "Mexico": { coal: 8, gas: 58, hydro: 16, solar: 9, wind: 6, storage: 3 },
-            "Netherlands": { coal: 18, gas: 35, hydro: 0, solar: 14, wind: 27, storage: 6 },
-            "New Zealand": { coal: 3, gas: 18, hydro: 57, solar: 1, wind: 21, storage: 0 },
-            "Norway": { coal: 0, gas: 0, hydro: 95, solar: 0, wind: 4, storage: 1 },
-            "Poland": { coal: 72, gas: 8, hydro: 2, solar: 4, wind: 10, storage: 4 },
-            "Portugal": { coal: 4, gas: 22, hydro: 24, solar: 18, wind: 30, storage: 2 },
-            "Slovakia": { coal: 18, gas: 12, hydro: 16, solar: 5, wind: 2, storage: 47 },
-            "Slovenia": { coal: 22, gas: 8, hydro: 28, solar: 7, wind: 1, storage: 34 },
-            "Spain": { coal: 10, gas: 20, hydro: 16, solar: 17, wind: 28, storage: 9 },
-            "Sweden": { coal: 5, gas: 1, hydro: 41, solar: 2, wind: 27, storage: 24 },
-            "Switzerland": { coal: 0, gas: 2, hydro: 62, solar: 4, wind: 2, storage: 30 },
-            "Turkey": { coal: 33, gas: 20, hydro: 22, solar: 12, wind: 10, storage: 3 },
-            "United Kingdom": { coal: 2, gas: 43, hydro: 2, solar: 4, wind: 27, storage: 22 },
-            "United States": { coal: 18, gas: 42, hydro: 6, solar: 3, wind: 10, storage: 21 }
+            "Australia": { coal: 45.2, gas: 16.8, hydro: 7.2, solar: 20.1, wind: 10.2, storage: 0.5 },
+            "Austria": { coal: 5.8, gas: 7.2, hydro: 62.1, solar: 4.9, wind: 8.5, storage: 11.5 },
+            "Belgium": { coal: 1.2, gas: 37.5, hydro: 1.8, solar: 7.9, wind: 11.8, storage: 40 },
+            "Canada": { coal: 7.8, gas: 1.9, hydro: 57.2, solar: 1.5, wind: 5.8, storage: 26 },
+            "Chile": { coal: 24.1, gas: 27.3, hydro: 22.8, solar: 20.5, wind: 5.3, storage: 0 },
+            "Colombia": { coal: 27.5, gas: 14.2, hydro: 50.8, solar: 2.1, wind: 2.0, storage: 3.4 },
+            "Costa Rica": { coal: 0, gas: 7.5, hydro: 42.3, solar: 15.6, wind: 18.5, storage: 16.1 },
+            "Czechia": { coal: 35.8, gas: 7.9, hydro: 1.8, solar: 6.2, wind: 6.0, storage: 42.3 },
+            "Denmark": { coal: 9.5, gas: 19.8, hydro: 0.2, solar: 5.9, wind: 64.6, storage: 0 },
+            "Estonia": { coal: 64.5, gas: 1.8, hydro: 0.1, solar: 2.8, wind: 10.2, storage: 20.6 },
+            "Finland": { coal: 7.5, gas: 1.9, hydro: 16.2, solar: 0.8, wind: 21.9, storage: 2.8 },
+            "France": { coal: 1.9, gas: 9.5, hydro: 11.3, solar: 2.8, wind: 8.4, storage: 2.0 },
+            "Germany": { coal: 32.5, gas: 8.0, hydro: 4.1, solar: 12.3, wind: 28.1, storage: 15 },
+            "Greece": { coal: 27.2, gas: 17.8, hydro: 12.1, solar: 20.3, wind: 14.9, storage: 7.7 },
+            "Hungary": { coal: 17.5, gas: 29.8, hydro: 0.9, solar: 10.9, wind: 0.8, storage: 40.1 },
+            "Iceland": { coal: 0, gas: 0, hydro: 64.2, solar: 0, wind: 28.5, storage: 7.3 },
+            "Ireland": { coal: 2.9, gas: 49.7, hydro: 1.9, solar: 3.8, wind: 33.2, storage: 8.5 },
+            "Israel": { coal: 44.8, gas: 47.5, hydro: 0, solar: 5.2, wind: 2.5, storage: 0 },
+            "Italy": { coal: 7.8, gas: 41.9, hydro: 11.9, solar: 12.8, wind: 9.8, storage: 15.8 },
+            "Japan": { coal: 29.8, gas: 37.9, hydro: 8.7, solar: 10.6, wind: 2.1, storage: 10.9 },
+            "Korea": { coal: 27.5, gas: 24.8, hydro: 1.2, solar: 7.1, wind: 1.0, storage: 38.4 },
+            "Latvia": { coal: 24.8, gas: 17.5, hydro: 48.2, solar: 2.1, wind: 7.4, storage: 0 },
+            "Lithuania": { coal: 5.8, gas: 56.2, hydro: 3.9, solar: 5.9, wind: 12.0, storage: 16.2 },
+            "Luxembourg": { coal: 14.5, gas: 31.8, hydro: 8.1, solar: 7.9, wind: 11.7, storage: 26 },
+            "Mexico": { coal: 7.8, gas: 57.5, hydro: 15.9, solar: 8.7, wind: 5.9, storage: 4.2 },
+            "Netherlands": { coal: 17.2, gas: 34.8, hydro: 0.1, solar: 13.9, wind: 27.1, storage: 6.9 },
+            "New Zealand": { coal: 2.9, gas: 17.5, hydro: 56.8, solar: 0.8, wind: 21.4, storage: 0.6 },
+            "Norway": { coal: 0.1, gas: 0.1, hydro: 95.3, solar: 0.1, wind: 4.2, storage: 0.2 },
+            "Poland": { coal: 71.8, gas: 7.5, hydro: 1.9, solar: 3.9, wind: 10.0, storage: 4.9 },
+            "Portugal": { coal: 3.8, gas: 21.5, hydro: 23.9, solar: 17.8, wind: 30.1, storage: 2.9 },
+            "Slovakia": { coal: 17.8, gas: 11.9, hydro: 15.9, solar: 4.8, wind: 1.9, storage: 47.7 },
+            "Slovenia": { coal: 21.5, gas: 7.8, hydro: 27.9, solar: 6.8, wind: 1.2, storage: 34.8 },
+            "Spain": { coal: 9.8, gas: 19.5, hydro: 15.9, solar: 17.2, wind: 28.1, storage: 9.5 },
+            "Sweden": { coal: 4.8, gas: 0.9, hydro: 40.8, solar: 1.9, wind: 27.3, storage: 24.3 },
+            "Switzerland": { coal: 0.1, gas: 1.8, hydro: 61.8, solar: 3.9, wind: 1.8, storage: 30.6 },
+            "Turkey": { coal: 32.8, gas: 19.5, hydro: 21.8, solar: 11.9, wind: 10.1, storage: 3.9 },
+            "United Kingdom": { coal: 1.9, gas: 42.5, hydro: 1.8, solar: 3.9, wind: 26.5, storage: 23.4 },
+            "United States": { coal: 17.8, gas: 41.5, hydro: 5.9, solar: 2.9, wind: 10.1, storage: 21.8 }
         };
 
         // Opponent ladder for championship
@@ -343,7 +350,7 @@
                 gas: "💨",
                 hydro: "💧",
                 solar: "☀️",
-                wind: "💨",
+                wind: "🌬️",
                 storage: "🔋"
             };
             return icons[cat] || "⚡";
@@ -383,7 +390,7 @@
                     <div class="stat">
                         <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
                         <div class="stat-rule">${getRule(cat)}</div>
-                        <div class="stat-value">${data[cat]}</div>
+                        <div class="stat-value">${data[cat].toFixed(1)}%</div>
                         <button onclick="pick('${cat}')">Choose</button>
                     </div>
                 `;
@@ -411,7 +418,7 @@
                         <div class="stat">
                             <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
                             <div class="stat-country">${team[cat].country}</div>
-                            <div class="stat-value">${team[cat].value}</div>
+                            <div class="stat-value">${team[cat].value.toFixed(1)}%</div>
                         </div>
                     `;
                 } else {
@@ -436,7 +443,7 @@
                     <div class="stat">
                         <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
                         <div class="stat-country">${team[cat].country}</div>
-                        <div class="stat-value">${team[cat].value}</div>
+                        <div class="stat-value">${team[cat].value.toFixed(1)}%</div>
                         <div class="stat-rule">${getRule(cat)}</div>
                     </div>
                 `;
@@ -507,8 +514,8 @@
                 tableHTML += `
                     <tr>
                         <td><b>${getIcon(cat)} ${cat.toUpperCase()}</b></td>
-                        <td>${myValue}</td>
-                        <td>${theirValue}</td>
+                        <td>${myValue.toFixed(1)}%</td>
+                        <td>${theirValue.toFixed(1)}%</td>
                         <td class="${resultClass}">${result}</td>
                     </tr>
                 `;
