@@ -525,19 +525,20 @@
             opponents.push("Norway");
         }
 
-        function initDraft() {
-            // Shuffle countries and pick 6
-            draftPool = Object.keys(countryData)
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 6);
-            renderDraft();
-        }
+function initDraft() {
+    // Pick one country for each category
+    draftPool = Object.keys(countryData)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, categories.length);
+
+    renderDraft();
+}
 
         function renderDraft() {
-            if (draftRound === 7) {
-                startGame();
-                return;
-            }
+if (draftRound >= categories.length) {
+    startGame();
+    return;
+}
 
             currentDraftCountry = draftPool[draftRound];
             const data = countryData[currentDraftCountry];
