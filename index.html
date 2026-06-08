@@ -64,6 +64,17 @@
             gap: 16px;
         }
 
+        .grid-custom {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .grid-custom.row-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
         .stat {
             background: #1f2b44;
             padding: 16px;
@@ -374,7 +385,7 @@
 
             <div class="card">
                 <h2>Your Supercountry (Building)</h2>
-                <div class="grid" id="draftPreview"></div>
+                <div id="draftPreview"></div>
                 <div class="data-source">📊 Real 2024 Data</div>
             </div>
         </div>
@@ -383,7 +394,7 @@
         <div id="gamePhase" class="hidden">
             <div class="card">
                 <h2>Your Final Supercountry</h2>
-                <div class="grid" id="finalTeam"></div>
+                <div id="finalTeam"></div>
                 <div class="data-year">
                     <strong>📊 Real World Energy Mix 2024</strong><br>
                     <span class="small">Data from International Energy Agency (IEA)</span>
@@ -534,8 +545,12 @@
             document.getElementById("draftProgress").textContent = `Draft ${draftRound + 1} / 7`;
             document.getElementById("draftCountry").textContent = currentDraftCountry;
 
-            let html = '<div class="grid">';
-            categories.forEach(cat => {
+            let html = '<div class="grid-custom"><div class="grid-custom row-4">';
+            categories.forEach((cat, index) => {
+                if (index === 4) {
+                    html += '</div><div class="grid-custom row-3">';
+                }
+                
                 const isUsed = usedCategories.has(cat);
                 const disabledClass = isUsed ? 'disabled' : '';
                 const rank = rankings[cat][currentDraftCountry];
@@ -558,7 +573,7 @@
                     </div>
                 `;
             });
-            html += '</div>';
+            html += '</div></div>';
 
             document.getElementById("draftChoices").innerHTML = html;
             updateDraftPreview();
@@ -580,8 +595,12 @@
         }
 
         function updateDraftPreview() {
-            let html = '';
-            categories.forEach(cat => {
+            let html = '<div class="grid-custom"><div class="grid-custom row-4">';
+            categories.forEach((cat, index) => {
+                if (index === 4) {
+                    html += '</div><div class="grid-custom row-3">';
+                }
+                
                 if (team[cat]) {
                     html += `
                         <div class="stat selected">
@@ -605,6 +624,7 @@
                     `;
                 }
             });
+            html += '</div></div>';
             document.getElementById("draftPreview").innerHTML = html;
         }
 
@@ -612,8 +632,12 @@
             document.getElementById("draftPhase").classList.add("hidden");
             document.getElementById("gamePhase").classList.remove("hidden");
 
-            let html = '';
-            categories.forEach(cat => {
+            let html = '<div class="grid-custom"><div class="grid-custom row-4">';
+            categories.forEach((cat, index) => {
+                if (index === 4) {
+                    html += '</div><div class="grid-custom row-3">';
+                }
+                
                 html += `
                     <div class="stat">
                         <div class="stat-header">
@@ -628,6 +652,7 @@
                     </div>
                 `;
             });
+            html += '</div></div>';
             document.getElementById("finalTeam").innerHTML = html;
 
             // Delay showing first round to prevent blank page
