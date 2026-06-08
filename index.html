@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Energy Champ</title>
+    <style>
+        :root {
+            --bg: #0b1220;
+            --card: #172033;
+            --accent: #38bdf8;
+            --text: #ffffff;
+            --muted: #94a3b8;
+            --win: #22c55e;
+            --loss: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #2b3a59;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .stat {
+            background: #1f2b44;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2b3a59;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-country {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 8px 0;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        .stat-rule {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--accent);
+            color: #00131f;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        td, th {
+            padding: 12px;
+            border-bottom: 1px solid #2b3a59;
+            text-align: left;
+        }
+
+        th {
+            background: #1f2b44;
+            font-weight: bold;
+        }
+
+        .win {
+            color: var(--win);
+            font-weight: bold;
+        }
+
+        .loss {
+            color: var(--loss);
+            font-weight: bold;
+        }
+
+        .tie {
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: #22314f;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+
+        .draft-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .draft-progress {
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: bold;
+            margin: 16px 0;
+        }
+
+        .country-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 24px 0;
+        }
+
+        .match-result {
+            background: #1f2b44;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            border: 2px solid #2b3a59;
+        }
+
+        .match-win {
+            border-color: var(--win);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .match-loss {
+            border-color: var(--loss);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .final-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .rating {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 20px 0;
+        }
+
+        .championship-complete {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .reset-btn {
+            background: #666;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background: #777;
+        }
+
+        .energy-icon {
+            font-size: 1.5rem;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>⚡ Energy Champ</h1>
+        <p class="small">Build your energy supercountry. Draft 6 countries and choose one energy strength from each. Then compete in 7 rounds against real-world energy mixes.</p>
+
+        <!-- DRAFT PHASE -->
+        <div id="draftPhase">
+            <div class="card">
+                <div class="draft-header">
+                    <div class="draft-progress" id="draftProgress">Draft 1 / 6</div>
+                    <div class="country-name" id="draftCountry">Loading...</div>
+                </div>
+            </div>
+
+            <div class="card" id="draftChoices"></div>
+
+            <div class="card">
+                <h2>Your Supercountry (Building)</h2>
+                <div class="grid" id="draftPreview"></div>
+            </div>
+        </div>
+
+        <!-- GAME PHASE -->
+        <div id="gamePhase" class="hidden">
+            <div class="card">
+                <h2>Your Final Supercountry</h2>
+                <div class="grid" id="finalTeam"></div>
+            </div>
+
+            <div class="card">
+                <h2 id="roundTitle"></h2>
+                <div id="battleArea"></div>
+            </div>
+
+            <div class="card">
+                <h3>Championship Progress</h3>
+                <p><span id="winCount">0</span> / 7 Wins</p>
+                <div style="background: #1f2b44; border-radius: 8px; height: 20px; overflow: hidden;">
+                    <div id="progressBar" style="background: var(--accent); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real country energy data (2024 estimates, % of electricity generation)
+        const countryData = {
+            "Australia": { coal: 45, gas: 18, hydro: 8, solar: 18, wind: 11, storage: 0 },
+            "Austria": { coal: 6, gas: 8, hydro: 60, solar: 4, wind: 8, storage: 14 },
+            "Belgium": { coal: 2, gas: 38, hydro: 2, solar: 8, wind: 12, storage: 38 },
+            "Canada": { coal: 8, gas: 2, hydro: 56, solar: 2, wind: 6, storage: 26 },
+            "Chile": { coal: 25, gas: 28, hydro: 22, solar: 20, wind: 5, storage: 0 },
+            "Colombia": { coal: 28, gas: 15, hydro: 50, solar: 2, wind: 2, storage: 3 },
+            "Costa Rica": { coal: 0, gas: 8, hydro: 42, solar: 15, wind: 18, storage: 17 },
+            "Czechia": { coal: 36, gas: 8, hydro: 2, solar: 6, wind: 6, storage: 36 },
+            "Denmark": { coal: 10, gas: 20, hydro: 0, solar: 6, wind: 64, storage: 0 },
+            "Estonia": { coal: 65, gas: 2, hydro: 0, solar: 3, wind: 10, storage: 20 },
+            "Finland": { coal: 8, gas: 2, hydro: 16, solar: 1, wind: 22, storage: 3 },
+            "France": { coal: 2, gas: 10, hydro: 11, solar: 3, wind: 8, storage: 2 },
+            "Germany": { coal: 33, gas: 8, hydro: 4, solar: 12, wind: 28, storage: 15 },
+            "Greece": { coal: 28, gas: 18, hydro: 12, solar: 20, wind: 15, storage: 7 },
+            "Hungary": { coal: 18, gas: 30, hydro: 1, solar: 11, wind: 1, storage: 39 },
+            "Iceland": { coal: 0, gas: 0, hydro: 64, solar: 0, wind: 28, storage: 8 },
+            "Ireland": { coal: 3, gas: 50, hydro: 2, solar: 4, wind: 33, storage: 8 },
+            "Israel": { coal: 45, gas: 48, hydro: 0, solar: 5, wind: 2, storage: 0 },
+            "Italy": { coal: 8, gas: 42, hydro: 12, solar: 13, wind: 10, storage: 15 },
+            "Japan": { coal: 30, gas: 38, hydro: 9, solar: 11, wind: 2, storage: 10 },
+            "Korea": { coal: 28, gas: 25, hydro: 1, solar: 7, wind: 1, storage: 38 },
+            "Latvia": { coal: 25, gas: 18, hydro: 48, solar: 2, wind: 7, storage: 0 },
+            "Lithuania": { coal: 6, gas: 56, hydro: 4, solar: 6, wind: 12, storage: 16 },
+            "Luxembourg": { coal: 15, gas: 32, hydro: 8, solar: 8, wind: 12, storage: 25 },
+            "Mexico": { coal: 8, gas: 58, hydro: 16, solar: 9, wind: 6, storage: 3 },
+            "Netherlands": { coal: 18, gas: 35, hydro: 0, solar: 14, wind: 27, storage: 6 },
+            "New Zealand": { coal: 3, gas: 18, hydro: 57, solar: 1, wind: 21, storage: 0 },
+            "Norway": { coal: 0, gas: 0, hydro: 95, solar: 0, wind: 4, storage: 1 },
+            "Poland": { coal: 72, gas: 8, hydro: 2, solar: 4, wind: 10, storage: 4 },
+            "Portugal": { coal: 4, gas: 22, hydro: 24, solar: 18, wind: 30, storage: 2 },
+            "Slovakia": { coal: 18, gas: 12, hydro: 16, solar: 5, wind: 2, storage: 47 },
+            "Slovenia": { coal: 22, gas: 8, hydro: 28, solar: 7, wind: 1, storage: 34 },
+            "Spain": { coal: 10, gas: 20, hydro: 16, solar: 17, wind: 28, storage: 9 },
+            "Sweden": { coal: 5, gas: 1, hydro: 41, solar: 2, wind: 27, storage: 24 },
+            "Switzerland": { coal: 0, gas: 2, hydro: 62, solar: 4, wind: 2, storage: 30 },
+            "Turkey": { coal: 33, gas: 20, hydro: 22, solar: 12, wind: 10, storage: 3 },
+            "United Kingdom": { coal: 2, gas: 43, hydro: 2, solar: 4, wind: 27, storage: 22 },
+            "United States": { coal: 18, gas: 42, hydro: 6, solar: 3, wind: 10, storage: 21 }
+        };
+
+        // Opponent ladder for championship
+        const ladder = [
+            "Poland",
+            "Estonia",
+            "Israel",
+            "Japan",
+            "Germany",
+            "Denmark",
+            "Norway"
+        ];
+
+        const categories = ["coal", "gas", "hydro", "solar", "wind", "storage"];
+
+        let draftPool = [];
+        let team = {};
+        let draftRound = 0;
+        let gameRound = 0;
+        let wins = 0;
+        let currentDraftCountry = null;
+
+        function getIcon(cat) {
+            const icons = {
+                coal: "⬛",
+                gas: "💨",
+                hydro: "💧",
+                solar: "☀️",
+                wind: "💨",
+                storage: "🔋"
+            };
+            return icons[cat] || "⚡";
+        }
+
+        function getRule(cat) {
+            if (cat === "coal" || cat === "gas") {
+                return "⬇️ Lower is better";
+            } else {
+                return "⬆️ Higher is better";
+            }
+        }
+
+        function initDraft() {
+            // Shuffle countries and pick 6
+            draftPool = Object.keys(countryData)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 6);
+            renderDraft();
+        }
+
+        function renderDraft() {
+            if (draftRound === 6) {
+                startGame();
+                return;
+            }
+
+            currentDraftCountry = draftPool[draftRound];
+            const data = countryData[currentDraftCountry];
+
+            document.getElementById("draftProgress").textContent = `Draft ${draftRound + 1} / 6`;
+            document.getElementById("draftCountry").textContent = currentDraftCountry;
+
+            let html = '<div class="grid">';
+            categories.forEach(cat => {
+                html += `
+                    <div class="stat">
+                        <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
+                        <div class="stat-rule">${getRule(cat)}</div>
+                        <div class="stat-value">${data[cat]}</div>
+                        <button onclick="pick('${cat}')">Choose</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            document.getElementById("draftChoices").innerHTML = html;
+            updateDraftPreview();
+        }
+
+        function pick(cat) {
+            team[cat] = {
+                country: currentDraftCountry,
+                value: countryData[currentDraftCountry][cat]
+            };
+            draftRound++;
+            renderDraft();
+        }
+
+        function updateDraftPreview() {
+            let html = '';
+            categories.forEach(cat => {
+                if (team[cat]) {
+                    html += `
+                        <div class="stat">
+                            <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
+                            <div class="stat-country">${team[cat].country}</div>
+                            <div class="stat-value">${team[cat].value}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="stat" style="opacity: 0.5;">
+                            <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
+                            <div class="stat-value">?</div>
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById("draftPreview").innerHTML = html;
+        }
+
+        function startGame() {
+            document.getElementById("draftPhase").classList.add("hidden");
+            document.getElementById("gamePhase").classList.remove("hidden");
+
+            let html = '';
+            categories.forEach(cat => {
+                html += `
+                    <div class="stat">
+                        <b>${getIcon(cat)} ${cat.toUpperCase()}</b>
+                        <div class="stat-country">${team[cat].country}</div>
+                        <div class="stat-value">${team[cat].value}</div>
+                        <div class="stat-rule">${getRule(cat)}</div>
+                    </div>
+                `;
+            });
+            document.getElementById("finalTeam").innerHTML = html;
+
+            showRound();
+        }
+
+        function showRound() {
+            if (gameRound >= ladder.length) {
+                showChampionshipResult();
+                return;
+            }
+
+            document.getElementById("roundTitle").textContent = `Round ${gameRound + 1}: vs ${ladder[gameRound]}`;
+            document.getElementById("battleArea").innerHTML = `
+                <button onclick="playMatch()" style="font-size: 1.2rem; padding: 16px;">⚔️ PLAY MATCH</button>
+            `;
+        }
+
+        function playMatch() {
+            const opponent = ladder[gameRound];
+            const opponentData = countryData[opponent];
+            let playerWins = 0;
+            let opponentWins = 0;
+
+            let tableHTML = `
+                <table>
+                    <tr>
+                        <th>Category</th>
+                        <th>You</th>
+                        <th>${opponent}</th>
+                        <th>Result</th>
+                    </tr>
+            `;
+
+            categories.forEach(cat => {
+                const myValue = team[cat].value;
+                const theirValue = opponentData[cat];
+                let result = "TIE";
+                let resultClass = "tie";
+
+                if (cat === "coal" || cat === "gas") {
+                    // Lower is better
+                    if (myValue < theirValue) {
+                        result = "WIN";
+                        resultClass = "win";
+                        playerWins++;
+                    } else if (myValue > theirValue) {
+                        result = "LOSS";
+                        resultClass = "loss";
+                        opponentWins++;
+                    }
+                } else {
+                    // Higher is better
+                    if (myValue > theirValue) {
+                        result = "WIN";
+                        resultClass = "win";
+                        playerWins++;
+                    } else if (myValue < theirValue) {
+                        result = "LOSS";
+                        resultClass = "loss";
+                        opponentWins++;
+                    }
+                }
+
+                tableHTML += `
+                    <tr>
+                        <td><b>${getIcon(cat)} ${cat.toUpperCase()}</b></td>
+                        <td>${myValue}</td>
+                        <td>${theirValue}</td>
+                        <td class="${resultClass}">${result}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</table>';
+
+            const matchWin = playerWins > opponentWins;
+            if (matchWin) wins++;
+
+            const resultClass = matchWin ? "match-win" : "match-loss";
+            const resultText = matchWin ? "⚡ MATCH WIN ⚡" : "❌ MATCH LOSS";
+
+            document.getElementById("battleArea").innerHTML = `
+                ${tableHTML}
+                <div class="match-result ${resultClass}">
+                    <h2>${resultText}</h2>
+                    <p style="font-size: 1.3rem; margin: 16px 0;">You: ${playerWins} | ${opponent}: ${opponentWins}</p>
+                    <button onclick="nextRound()">Continue →</button>
+                </div>
+            `;
+
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const percentage = (wins / 7) * 100;
+            document.getElementById("progressBar").style.width = percentage + "%";
+            document.getElementById("winCount").textContent = wins;
+        }
+
+        function nextRound() {
+            gameRound++;
+            showRound();
+        }
+
+        function showChampionshipResult() {
+            let rating = "🏅 Developing System";
+            let color = "#666";
+
+            if (wins >= 7) {
+                rating = "🏆 PERFECT CHAMPION 🏆";
+                color = "var(--accent)";
+            } else if (wins >= 6) {
+                rating = "🥇 Elite Grid Master";
+                color = "var(--win)";
+            } else if (wins >= 5) {
+                rating = "🥈 Regional Champion";
+                color = "var(--accent)";
+            } else if (wins >= 3) {
+                rating = "🥉 Competitive Player";
+                color = "#fbbf24";
+            }
+
+            document.getElementById("roundTitle").textContent = "Championship Complete!";
+            document.getElementById("battleArea").innerHTML = `
+                <div class="championship-complete">
+                    <h2>Final Score: ${wins} / 7</h2>
+                    <div class="rating" style="color: ${color};">${rating}</div>
+                    <button class="reset-btn" onclick="location.reload()">🔄 Play Again</button>
+                </div>
+            `;
+        }
+
+        // Start the game
+        initDraft();
+    </script>
+</body>
+</html>
